@@ -96,7 +96,8 @@ function _revealOnEntry() {
 
   _showOverlayInstant(_transitionOverlay, color, _config.showPageName ? pageName : '');
 
-  gsap.delayedCall(0.4, () => {
+  const hold = _config.showPageName ? 0.4 : 0;
+  gsap.delayedCall(hold, () => {
     _overlayOut(_transitionOverlay, () => {
       _isTransitioning = false;
     });
