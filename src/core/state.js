@@ -7,7 +7,7 @@ const _config = {
   showPageName: true,      // display the destination page name on the overlay
   loaderColor: '#000000',  // overlay background for the loader (black)
   loaderText: 'Loading',   // text shown inside the loader overlay
-  transitionColor: '#1a5c38', // overlay background for page transitions (green)
+  transitionColor: '#353535', // overlay background for page transitions (green)
   duration: 0.7,           // animation duration in seconds (all GSAP tweens use this)
   ease: 'power2.inOut',    // GSAP easing applied to all overlay animations
 

@@ -1,12 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+  <base href="/test/">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Work — WF Motion Test</title>
   <link rel="stylesheet" href="../dist/webflow-motion.css">
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
@@ -19,10 +27,21 @@
       gap: 2rem;
     }
 
-    h1 { font-size: 2.5rem; font-weight: 700; letter-spacing: -0.02em; }
-    p  { color: #666; font-size: 1rem; }
+    h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
 
-    nav { display: flex; gap: 1rem; }
+    p {
+      color: #666;
+      font-size: 1rem;
+    }
+
+    nav {
+      display: flex;
+      gap: 1rem;
+    }
 
     nav a {
       padding: 0.75rem 1.5rem;
@@ -35,6 +54,7 @@
     }
   </style>
 </head>
+
 <body>
 
   <h1>Work</h1>
@@ -48,12 +68,7 @@
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
   <script src="../dist/webflow-motion.js"></script>
-  <script>
-    WebflowMotion.init({
-      loader: false,
-      pageTransitions: true,
-      showPageName: true
-    });
-  </script>
+  <script src="init.js"></script>
 </body>
+
 </html>

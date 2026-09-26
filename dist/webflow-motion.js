@@ -17,7 +17,7 @@ const _config = {
   showPageName: true,      // display the destination page name on the overlay
   loaderColor: '#000000',  // overlay background for the loader (black)
   loaderText: 'Loading',   // text shown inside the loader overlay
-  transitionColor: '#1a5c38', // overlay background for page transitions (green)
+  transitionColor: '#353535', // overlay background for page transitions (green)
   duration: 0.7,           // animation duration in seconds (all GSAP tweens use this)
   ease: 'power2.inOut',    // GSAP easing applied to all overlay animations
 
@@ -225,6 +225,24 @@ function _overlayOut(onComplete) {
   return tl;
 }
 
+// ── animations/curtain.js ──
+const _animateCurtainIn = (_overlay, done) => {
+  _overlay.el.classList.add('wm-curtain');
+  _overlay.el.style.backgroundColor = '';
+  gsap.fromTo(_overlay.el,
+    { yPercent: 100, opacity: 1 },
+    { yPercent: 0, duration: 0.8, ease: 'power2.inOut', onComplete: done }
+  );
+};
+
+const _animateCurtainOut = (_overlay, done) => {
+  _overlay.el.classList.add('wm-curtain');
+  _overlay.el.style.backgroundColor = '';
+  gsap.to(_overlay.el,
+    { yPercent: -100, duration: 0.8, ease: 'power2.inOut', onComplete: done }
+  );
+};
+
 // ── loader/loader.js ──
 // ─── Page loader ─────────────────────────────────────────────────────────────
 // Runs on the initial visit to the site (no sessionStorage transition flag).
@@ -261,6 +279,17 @@ function _runLoader() {
 }
 
 // ── transitions/page-transition.js ──
+// ─── URL resolution ───────────────────────────────────────────────────────────
+// Resolves a potentially relative href against the current page.
+// Uses window.location.href as base, but treats extensionless paths (clean URLs
+// like /about or /test) as directories by appending a trailing slash first —
+// without this, 'work.html' relative to '/test' resolves to '/work.html'
+// instead of '/test/work.html'.
+
+function _resolveUrl(href) {
+  return new URL(href, document.baseURI).href;
+}
+
 // ─── Page name from URL ───────────────────────────────────────────────────────
 // Derives a human-readable page name from a URL path.
 // /about → "About", /our-work → "Our work"
@@ -268,7 +297,7 @@ function _runLoader() {
 
 function _pageNameFromUrl(href) {
   try {
-    const { pathname } = new URL(href, window.location.origin);
+    const { pathname } = new URL(_resolveUrl(href));
     const segment = pathname.replace(/\/$/, '').split('/').pop();
     if (!segment) return 'Home';
     return segment.charAt(0).toUpperCase() + segment.slice(1).replace(/[-_]/g, ' ');
@@ -287,7 +316,7 @@ function _isInternalLink(el) {
   if (!href || /^(#|mailto:|tel:|javascript:)/i.test(href)) return false;
   if (el.target === '_blank') return false;
   try {
-    return new URL(href, window.location.origin).origin === window.location.origin;
+    return new URL(_resolveUrl(href)).origin === window.location.origin;
   } catch {
     return false;
   }
@@ -306,7 +335,8 @@ function _handleClick(e) {
   if (!_isInternalLink(link)) return;
 
   const href = link.getAttribute('href');
-  const dest = new URL(href, window.location.origin).pathname;
+  const resolvedHref = _resolveUrl(href);
+  const dest = new URL(_resolveUrl(href)).pathname;
   if (dest === window.location.pathname) return; // same page — do nothing
 
   e.preventDefault();
@@ -331,7 +361,7 @@ function _handleClick(e) {
       color: _config.transitionColor,
       timestamp: Date.now()
     }));
-    window.location.href = href;
+    window.location.href = resolvedHref;
   });
 }
 
@@ -484,6 +514,14 @@ window.WebflowMotion = {
     } else {
       setup();
     }
+  }
+};
+
+// ── core/presets.js ──
+window.WebflowMotion.presets = {
+  curtain: {
+    animateIn: _animateCurtainIn,
+    animateOut: _animateCurtainOut
   }
 };
 
