@@ -5,8 +5,10 @@ const _config = {
   loader: true,            // run the full-screen loader on initial page visit
   pageTransitions: true,   // intercept internal links and animate between pages
   showPageName: true,      // display the destination page name on the overlay
-  loaderColor: '#000000',  // overlay background for the loader (black)
-  loaderText: 'Loading',   // text shown inside the loader overlay
+  loaderColor: '#f9f8f5',  // overlay background for the loader (black)
+  loaderText: 'Loading',   // text shown inside the loader overlay (ignored when loaderLottie is set)
+  loaderLottie: null,      // path/URL to a Lottie JSON — when set, replaces the text loader
+  loaderWaitForLoop: true, // when true, waits for the Lottie to complete one full loop before exiting
   transitionColor: '#353535', // overlay background for page transitions (green)
   duration: 0.7,           // animation duration in seconds (all GSAP tweens use this)
   ease: 'power2.inOut',    // GSAP easing applied to all overlay animations
