@@ -31,9 +31,10 @@ const _config = {
 
 // ─── Runtime state ───────────────────────────────────────────────────────────
 
-// The single overlay DOM node shared by both the loader and transition system.
-// Set once in _buildOverlay() and referenced everywhere else.
-let _overlay = null;
+// Two independent overlay DOM nodes — one for the loader, one for transitions.
+// Each is built separately in init.js so styling one never affects the other.
+let _loaderOverlay = null;
+let _transitionOverlay = null;
 
 // Guard flag — prevents a second transition from starting while one is already
 // running. Checked in _handleClick() and reset when the overlay fully exits.

@@ -1,9 +1,7 @@
 // ─── URL resolution ───────────────────────────────────────────────────────────
 // Resolves a potentially relative href against the current page.
-// Uses window.location.href as base, but treats extensionless paths (clean URLs
-// like /about or /test) as directories by appending a trailing slash first —
-// without this, 'work.html' relative to '/test' resolves to '/work.html'
-// instead of '/test/work.html'.
+// Uses document.baseURI so it respects any <base> tag and correctly handles
+// both .html file paths and clean URLs (e.g. /about, /work).
 
 function _resolveUrl(href) {
   return new URL(href, document.baseURI).href;
@@ -48,33 +46,26 @@ function _isInternalLink(el) {
 
 function _handleClick(e) {
   if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
-  if (_isTransitioning) return; // block double-clicks while a transition is running
+  if (_isTransitioning) return;
 
-  const link = e.target.closest('a'); // walk up the DOM in case the click hit a child element
+  const link = e.target.closest('a');
   if (!_isInternalLink(link)) return;
 
   const href = link.getAttribute('href');
   const resolvedHref = _resolveUrl(href);
-  const dest = new URL(_resolveUrl(href)).pathname;
-  if (dest === window.location.pathname) return; // same page — do nothing
+  const dest = new URL(resolvedHref).pathname;
+  if (dest === window.location.pathname) return;
 
   e.preventDefault();
   _isTransitioning = true;
 
-  // data-page attribute takes precedence over the URL-derived name,
-  // allowing manual control over what's displayed on the overlay.
   const pageName = link.getAttribute('data-page') || _pageNameFromUrl(href);
 
-  // Prepare the overlay for the transition (green, destination page name)
-  _setOverlayColor(_config.transitionColor);
-  _setOverlayText(_config.showPageName ? pageName : '');
-  gsap.set(_overlay.text, { opacity: 0, y: 15 });
+  _setOverlayColor(_transitionOverlay, _config.transitionColor);
+  _setOverlayText(_transitionOverlay, _config.showPageName ? pageName : '');
+  gsap.set(_transitionOverlay.text, { opacity: 0, y: 15 });
 
-  // Fade the overlay in, then navigate. Navigation only happens after the
-  // overlay is fully visible so the exit feels intentional, not abrupt.
-  _overlayIn(() => {
-    // Store the transition state in sessionStorage so the destination page
-    // knows it arrived via a transition and should reveal with the overlay.
+  _overlayIn(_transitionOverlay, () => {
     sessionStorage.setItem('wm_transition', JSON.stringify({
       pageName,
       color: _config.transitionColor,
@@ -92,25 +83,21 @@ function _handleClick(e) {
 
 function _revealOnEntry() {
   const raw = sessionStorage.getItem('wm_transition');
-  sessionStorage.removeItem('wm_transition'); // always clear — prevents stale state
+  sessionStorage.removeItem('wm_transition');
   if (!raw) return false;
 
   let data;
   try { data = JSON.parse(raw); } catch { return false; }
 
-  // Ignore entries older than 10 seconds — could happen if the user navigated
-  // back from an external page or the tab was suspended mid-transition.
   if (Date.now() - data.timestamp > 10000) return false;
 
   const pageName = data.pageName || '';
   const color = data.color || _config.transitionColor;
 
-  // Show overlay immediately at full opacity so there's no flash of page content
-  _showOverlayInstant(color, _config.showPageName ? pageName : '');
+  _showOverlayInstant(_transitionOverlay, color, _config.showPageName ? pageName : '');
 
-  // Hold for a moment so the user can read the page name, then exit
   gsap.delayedCall(0.4, () => {
-    _overlayOut(() => {
+    _overlayOut(_transitionOverlay, () => {
       _isTransitioning = false;
     });
   });
@@ -126,11 +113,10 @@ function _initTransitions() {
 
   // When the browser restores this page from bfcache (back/forward button),
   // the overlay is frozen at full opacity from the transition that preceded
-  // the navigation — _isTransitioning is still true and nothing clears it.
-  // Detect the restore and fade the overlay out so the page is usable again.
+  // the navigation — reset and fade it out so the page is usable again.
   window.addEventListener('pageshow', (e) => {
-    if (!e.persisted || !_overlay) return;
+    if (!e.persisted || !_transitionOverlay) return;
     _isTransitioning = false;
-    _overlayOut();
+    _overlayOut(_transitionOverlay);
   });
 }
