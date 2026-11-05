@@ -19,9 +19,16 @@ function _runLoader() {
     const anim = window.lottie.loadAnimation({
       container,
       renderer: 'svg',
-      loop: true,
-      autoplay: true,
+      // loop: true,
+      loop: false,
+      // autoplay: true,
+      autoplay: false,
       path: _config.loaderLottie
+    });
+
+    anim.addEventListener('DOMLoaded', () => {
+      anim.setDirection(-1);
+      anim.goToAndPlay(anim.totalFrames, true);
     });
 
     function _exitLoader() {
@@ -44,7 +51,8 @@ function _runLoader() {
       let pageReady = false;
       let loopDone = false;
 
-      anim.addEventListener('loopComplete', () => { loopDone = true; if (pageReady) _exitLoader(); });
+      // anim.addEventListener('loopComplete', () => { loopDone = true; if (pageReady) _exitLoader(); });
+      anim.addEventListener('complete', () => { loopDone = true; if (pageReady) _exitLoader(); });
       _onPageReady(() => { pageReady = true; if (loopDone) _exitLoader(); });
     } else {
       _onPageReady(_exitLoader);
