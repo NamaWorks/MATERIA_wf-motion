@@ -248,14 +248,8 @@ function _runLoader() {
       renderer: 'svg',
       // loop: true,
       loop: false,
-      // autoplay: true,
-      autoplay: false,
+      autoplay: true,
       path: _config.loaderLottie
-    });
-
-    anim.addEventListener('DOMLoaded', () => {
-      anim.setDirection(-1);
-      anim.goToAndPlay(anim.totalFrames, true);
     });
 
     function _exitLoader() {
