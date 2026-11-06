@@ -18,9 +18,13 @@ function _runLoader() {
     _showOverlayInstant(_loaderOverlay, _config.loaderColor, '');
 
     // A dedicated div is created for lottie to render into.
-    // Sized in CSS (.wm-lottie) — aspect ratio matches the composition (1920×1080).
+    // Centering is applied as inline styles so Webflow's CSS cannot override it.
     const container = document.createElement('div');
     container.className = 'wm-lottie';
+    container.style.position = 'absolute';
+    container.style.top = '50%';
+    container.style.left = '50%';
+    container.style.transform = 'translate(-50%, -50%)';
     _loaderOverlay.el.appendChild(container);
 
     const anim = window.lottie.loadAnimation({
