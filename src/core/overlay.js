@@ -7,6 +7,14 @@ function _buildOverlay() {
   el.className = 'wm-overlay';
   el.setAttribute('aria-hidden', 'true');
 
+  // Critical layout styles applied inline so the overlay works even if
+  // webflow-motion.css fails to load or Webflow's CSS overrides the class.
+  el.style.position = 'fixed';
+  el.style.inset = '0';
+  el.style.zIndex = '10000';
+  el.style.pointerEvents = 'none';
+  el.style.opacity = '0';
+
   const text = document.createElement('span');
   text.className = 'wm-text';
 
