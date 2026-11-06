@@ -30,7 +30,11 @@
 /* ─── Lottie loader ──────────────────────────────────────────────────────────── */
 
 .wm-lottie {
-  position: relative; /* required for html renderer — lottie layers use position:absolute */
+  /* centered within the fixed overlay regardless of Webflow's flex overrides */
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   width: min(480px, 70vw);
   aspect-ratio: 1920 / 1080;
   pointer-events: none;
