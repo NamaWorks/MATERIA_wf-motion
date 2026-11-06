@@ -29,6 +29,7 @@
 /* ─── Lottie loader ──────────────────────────────────────────────────────────── */
 
 .wm-lottie {
+  position: relative; /* required for html renderer — lottie layers use position:absolute */
   width: min(480px, 70vw);
   aspect-ratio: 1920 / 1080;
   pointer-events: none;
